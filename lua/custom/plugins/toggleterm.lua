@@ -1,6 +1,7 @@
 return {
   'akinsho/toggleterm.nvim',
   version = '*',
+  event = 'VeryLazy',
   config = function()
     local run_term_id = 99
     local fidget = require 'fidget'

@@ -21,8 +21,8 @@ vim.opt.foldlevel = 20
 vim.loader.enable()
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
-vim.g.node_host_prog = '~/.nvm/versions/node/v18.20.4/lib/node_modules/'
--- vim.cmd "let g:node_host_prog='~/.nvm/versions/node/v18.20.4/lib/node_modules/'"
+vim.g.node_host_prog = '~/.nvm/versions/node/v18.19.0/lib/node_modules/'
+-- vim.cmd "let g:node_host_prog='~/.nvm/versions/node/v18.19.0/lib/node_modules/'"
 
 if vim.fn.has 'wsl' == 1 then
   vim.g.clipboard = {
@@ -235,11 +235,12 @@ require('lazy').setup {
   --     }
   --   end,
   -- },
-  { 'tpope/vim-sleuth' }, -- Detect tabstop and shiftwidth automatically
-  -- { 'tpope/vim-fugitive' },
-  -- { 'tpope/vim-rhubarb' },
+  { 'tpope/vim-sleuth', event = 'VeryLazy' }, -- Detect tabstop and shiftwidth automatically
+  { 'tpope/vim-fugitive', event = 'VeryLazy' },
+  { 'tpope/vim-rhubarb', event = 'VeryLazy' },
   {
     'noatdk/fileline.nvim',
+    event = 'VeryLazy',
     config = function()
       vim.keymap.set('n', 'gl', function()
         if vim.bo.filetype == 'toggleterm' then
@@ -260,7 +261,7 @@ require('lazy').setup {
   {
     'mikesmithgh/kitty-scrollback.nvim',
     enabled = true,
-    lazy = true,
+    -- lazy = true,
     cmd = { 'KittyScrollbackGenerateKittens', 'KittyScrollbackCheckHealth', 'KittyScrollbackGenerateCommandLineEditing' },
     event = { 'User KittyScrollbackLaunch' },
     -- version = '*', -- latest stable version, may have breaking changes if major version changed
@@ -290,6 +291,7 @@ require('lazy').setup {
   -- { 'skywind3000/asyncrun.vim' },
   {
     'mg979/vim-visual-multi',
+    event = 'VeryLazy',
     config = function()
       --      vim.g.VM_leader = "|"
     end,
@@ -320,9 +322,10 @@ require('lazy').setup {
   --   },
   -- },
   -- { 'Civitasv/cmake-tools.nvim', opts = {} },
-  { 'vim-denops/denops.vim' },
+  { 'vim-denops/denops.vim', event = 'VeryLazy' },
   {
     'lambdalisue/kensaku.vim',
+    event = 'VeryLazy',
     {
       'lambdalisue/kensaku-search.vim',
       config = function()
@@ -332,7 +335,7 @@ require('lazy').setup {
   },
   {
     'folke/which-key.nvim',
-    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+    event = 'VeryLazy',
     config = function() -- This is the function that runs, AFTER loading
       require('which-key').setup()
 
@@ -352,6 +355,7 @@ require('lazy').setup {
   {
     -- 'flazz/vim-colorschemes',
     'cseelus/vim-colors-clearance',
+    event = 'VeryLazy',
     init = function()
       vim.cmd.colorscheme 'clearance'
     end,
@@ -372,6 +376,7 @@ require('lazy').setup {
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
+    event = 'VeryLazy',
     config = function()
       -- Better Around/Inside textobjects
       --
@@ -402,7 +407,7 @@ require('lazy').setup {
       end
     end,
   },
-  { 'j-hui/fidget.nvim', opts = {} },
+  { 'j-hui/fidget.nvim', opts = {}, event = 'VeryLazy' },
   {
     'stevearc/oil.nvim',
     ---@module 'oil'
