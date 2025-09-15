@@ -3,7 +3,7 @@ return {
   version = '*',
   event = 'VeryLazy',
   config = function()
-    local run_term_id = 99
+    local run_term_id = vim.g.run_term_id or 99
     local fidget = require 'fidget'
     local toggleterm = require 'toggleterm.terminal'
     require('toggleterm').setup {
@@ -17,7 +17,6 @@ return {
           local new_data = {}
           for i, line in pairs(data) do
             if line ~= '' then
-              -- new_data[#new_data + 1] = line:gsub('\27%[[%d;]*[mK]', '')
               new_data[#new_data + 1] = line
             end
           end

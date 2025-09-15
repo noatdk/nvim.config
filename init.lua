@@ -1,3 +1,4 @@
+vim.loader.enable()
 --vim.cmd 'lang ja_JP.UTF-8'
 
 -- Set <space> as the leader key
@@ -8,69 +9,22 @@ vim.g.maplocalleader = ' '
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.loaded_matchparen = 1
+-- Set to true if you have a Nerd Font installed and selected in the terminal
+vim.g.have_nerd_font = true
+vim.g.node_host_prog = '~/.nvm/versions/node/v21.7.3/lib/node_modules/'
+
 vim.deprecate = function() end
 
+-- [[ setting options ]]
+-- see `:help vim.opt`
+-- note: you can change these options as you wish!
+--  for more options, you can see `:help option-list
 vim.opt.title = true
 vim.opt.titlelen = 0 -- do not shorten title
 vim.opt.titlestring = '%t%( %M%)%( (%{expand("%:~:h")})%)%a'
 
 vim.opt.foldenable = false
 vim.opt.foldlevel = 20
-
--- vim.o.background = 'light'
-vim.loader.enable()
--- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = true
-vim.g.node_host_prog = '~/.nvm/versions/node/v18.19.0/lib/node_modules/'
--- vim.cmd "let g:node_host_prog='~/.nvm/versions/node/v18.19.0/lib/node_modules/'"
-
-if vim.fn.has 'wsl' == 1 then
-  vim.g.clipboard = {
-    name = 'win32yank-wsl',
-    copy = {
-      ['+'] = 'win32yank.exe -i --crlf',
-      ['*'] = 'win32yank.exe -i --crlf',
-    },
-    paste = {
-      ['+'] = 'win32yank.exe -o --lf',
-      ['*'] = 'win32yank.exe -o --lf',
-    },
-    cache_enabled = true,
-  }
-end
---vim.g.python3_host_prog = 'C:\\Users\\asus\\.pyenv\\pyenv-win\\versions\\3.12.4\\python.exe'
---
---vim.o.shell = 'pwsh.exe'
---
---vim.cmd "let &shell = executable('pwsh') ? 'pwsh' : 'powershell'"
---vim.cmd [[let &shellcmdflag = '-NoLogo -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();$PSDefaultParameterValues[''Out-File:Encoding'']=''utf8'';Remove-Alias -Force -ErrorAction SilentlyContinue tee;']]
---vim.cmd [[let &shellredir = '2>&1 | %%{ "$_" } | Out-File %s; exit $LastExitCode']]
---vim.cmd [[let &shellpipe  = '2>&1 | %%{ "$_" } | tee %s; exit $LastExitCode']]
---vim.cmd 'set shellquote= shellxquote='
-function _G.set_terminal_keymaps()
-  local opts = { buffer = 0 }
-  vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
-  vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
-  vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
-  vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], opts)
-  vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
-  vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], opts)
-  vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
-end
--- if you only want these mappings for toggle term use term://*toggleterm#* instead
-vim.cmd 'autocmd! TermOpen term://* lua set_terminal_keymaps()'
-
-function insertFullPath()
-  local filepath = vim.fn.expand '%'
-  vim.fn.setreg('+', filepath) -- write to clippoard
-end
-
-vim.keymap.set('n', '<leader>cp', insertFullPath, { noremap = true, silent = true, desc = '[C]opy File [P]ath' })
-
--- [[ setting options ]]
--- see `:help vim.opt`
--- note: you can change these options as you wish!
---  for more options, you can see `:help option-list
 
 -- Make line numbers default
 vim.opt.number = true
@@ -131,11 +85,46 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+if vim.fn.has 'wsl' == 1 then
+  vim.g.clipboard = {
+    name = 'win32yank-wsl',
+    copy = {
+      ['+'] = 'win32yank.exe -i --crlf',
+      ['*'] = 'win32yank.exe -i --crlf',
+    },
+    paste = {
+      ['+'] = 'win32yank.exe -o --lf',
+      ['*'] = 'win32yank.exe -o --lf',
+    },
+    cache_enabled = true,
+  }
+end
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
+function _G.set_terminal_keymaps()
+  local opts = { buffer = 0 }
+  vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
+  vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
+  vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
+  vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], opts)
+  vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
+  vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], opts)
+  vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
+end
+-- if you only want these mappings for toggle term use term://*toggleterm#* instead
+vim.cmd 'autocmd! TermOpen term://* lua set_terminal_keymaps()'
+
+function _G.insert_full_path()
+  local filepath = vim.fn.expand '%'
+  vim.fn.setreg('+', filepath) -- write to clippoard
+end
+
+vim.keymap.set('n', '<leader>cp', insert_full_path, { noremap = true, silent = true, desc = '[C]opy File [P]ath' })
+
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
@@ -146,12 +135,6 @@ vim.keymap.set('n', '<leader>td', function()
   vim.diagnostic.config { virtual_text = not vim.diagnostic.config().virtual_text }
 end, { desc = '[T]oggle [D]iagnostic Virtual Text' })
 
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
---
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- Keybinds to make split navigation easier.
@@ -163,6 +146,19 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 vim.keymap.set('n', '-', '<cmd>Oil<CR>')
+
+vim.keymap.set('n', 'gl', function()
+  if vim.bo.filetype == 'toggleterm' then
+    local line = vim.api.nvim_get_current_line()
+    require('toggleterm.ui').goto_previous()
+    require('fileline').gotoline_at_cursor(true, line)
+    return
+  end
+
+  require('fileline').gotoline_at_cursor(true)
+end, { desc = '[G]o to [L]ine' })
+
+vim.api.nvim_set_keymap('c', '<CR>', '<Plug>(kensaku-search-replace)<CR>', { noremap = true, silent = true })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -191,35 +187,22 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure and install plugins ]]
---
---  To check the current status of your plugins, run
---    :Lazy
---
---  You can press `?` in this menu for help. Use `:q` to close the window
---
---  To update plugins you can run
---    :Lazy update
---
--- NOTE: Here is where you install your plugins.
 require('lazy').setup {
   {
     'klen/nvim-config-local',
-    config = function()
-      require('config-local').setup {
-        -- Default options (optional)
+    opts = {
+      -- Default options (optional)
+      -- Config file patterns to load (lua supported)
+      config_files = { '.nvim.lua', '.nvimrc', '.exrc' },
 
-        -- Config file patterns to load (lua supported)
-        config_files = { '.nvim.lua', '.nvimrc', '.exrc' },
+      -- Where the plugin keeps files data
+      hashfile = vim.fn.stdpath 'data' .. '/config-local',
 
-        -- Where the plugin keeps files data
-        hashfile = vim.fn.stdpath 'data' .. '/config-local',
-
-        autocommands_create = true, -- Create autocommands (VimEnter, DirectoryChanged)
-        commands_create = true, -- Create commands (ConfigLocalSource, ConfigLocalEdit, ConfigLocalTrust, ConfigLocalDeny)
-        silent = false, -- Disable plugin messages (Config loaded/denied)
-        lookup_parents = false, -- Lookup config files in parent directories
-      }
-    end,
+      autocommands_create = true, -- Create autocommands (VimEnter, DirectoryChanged)
+      commands_create = true, -- Create commands (ConfigLocalSource, ConfigLocalEdit, ConfigLocalTrust, ConfigLocalDeny)
+      silent = true, -- Disable plugin messages (Config loaded/denied)
+      lookup_parents = false, -- Lookup config files in parent directories
+    },
   },
   -- {
   --   'pechorin/any-jump.vim',
@@ -236,23 +219,11 @@ require('lazy').setup {
   --   end,
   -- },
   { 'tpope/vim-sleuth', event = 'VeryLazy' }, -- Detect tabstop and shiftwidth automatically
-  { 'tpope/vim-fugitive', event = 'VeryLazy' },
-  { 'tpope/vim-rhubarb', event = 'VeryLazy' },
+  { 'tpope/vim-fugitive', event = 'VeryLazy' }, -- Git commands in the fugitive interface
+  { 'tpope/vim-rhubarb', event = 'VeryLazy' }, -- Open line on remote repo
   {
     'noatdk/fileline.nvim',
     event = 'VeryLazy',
-    config = function()
-      vim.keymap.set('n', 'gl', function()
-        if vim.bo.filetype == 'toggleterm' then
-          local line = vim.api.nvim_get_current_line()
-          require('toggleterm.ui').goto_previous()
-          require('fileline').gotoline_at_cursor(true, line)
-          return
-        end
-
-        require('fileline').gotoline_at_cursor(true)
-      end, { desc = '[G]o to [L]ine' })
-    end,
   },
   -- {
   --   'christoomey/vim-tmux-navigator',
@@ -292,9 +263,6 @@ require('lazy').setup {
   {
     'mg979/vim-visual-multi',
     event = 'VeryLazy',
-    config = function()
-      --      vim.g.VM_leader = "|"
-    end,
   },
   -- {
   --   'amitds1997/remote-nvim.nvim',
@@ -307,31 +275,18 @@ require('lazy').setup {
   --   },
   --   config = true,
   -- },
-  -- {
-  --   'supermaven-inc/supermaven-nvim',
-  --   lazy = true,
-  --   opts = {
-  --     keymaps = {
-  --       accept_suggestion = nil, -- handled by nvim-cmp / blink.cmp
-  --     },
-  --     disable_inline_completion = vim.g.ai_cmp,
-  --     ignore_filetypes = { 'bigfile', 'snacks_input', 'snacks_notif' },
-  --     condition = function()
-  --       return vim.g.supermaven ~= true
-  --     end,
-  --   },
-  -- },
   -- { 'Civitasv/cmake-tools.nvim', opts = {} },
-  { 'vim-denops/denops.vim', event = 'VeryLazy' },
+
   {
-    'lambdalisue/kensaku.vim',
-    event = 'VeryLazy',
-    {
-      'lambdalisue/kensaku-search.vim',
-      config = function()
-        vim.api.nvim_set_keymap('c', '<CR>', '<Plug>(kensaku-search-replace)<CR>', { noremap = true, silent = true })
-      end,
+    'lambdalisue/kensaku-search.vim',
+    dependencies = {
+      { 'vim-denops/denops.vim', event = 'VeryLazy' },
+      {
+        'lambdalisue/kensaku.vim',
+        event = 'VeryLazy',
+      },
     },
+    event = 'VeryLazy',
   },
   {
     'folke/which-key.nvim',
@@ -355,7 +310,7 @@ require('lazy').setup {
   {
     -- 'flazz/vim-colorschemes',
     'cseelus/vim-colors-clearance',
-    event = 'VeryLazy',
+    event = 'UIEnter',
     init = function()
       vim.cmd.colorscheme 'clearance'
     end,
@@ -372,7 +327,7 @@ require('lazy').setup {
   -- },
 
   -- Highlight todo, notes, etc in comments
-  -- { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  { 'folke/todo-comments.nvim', event = 'VeryLazy', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
@@ -433,10 +388,11 @@ require('lazy').setup {
     lazy = false,
   },
 
-  -- require 'custom.plugins.debug',
+  require 'custom.plugins.debug',
   require 'custom.plugins.indent_line',
   require 'custom.plugins.lint',
   require 'custom.plugins.autopairs',
+  require 'custom.plugins.cmp',
   require 'custom.plugins.lsp',
   require 'custom.plugins.telescope',
   require 'custom.plugins.tree-sitter',
