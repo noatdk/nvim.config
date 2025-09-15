@@ -13,6 +13,7 @@ vim.g.loaded_matchparen = 1
 vim.g.have_nerd_font = true
 vim.g.node_host_prog = '~/.nvm/versions/node/v21.7.3/lib/node_modules/'
 
+---@diagnostic disable-next-line: duplicate-set-field
 vim.deprecate = function() end
 
 -- [[ setting options ]]
@@ -183,7 +184,8 @@ if not vim.uv.fs_stat(lazypath) then
   if vim.v.shell_error ~= 0 then
     error('Error cloning lazy.nvim:\n' .. out)
   end
-end ---@diagnostic disable-next-line: undefined-field
+end
+---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure and install plugins ]]
@@ -311,7 +313,7 @@ require('lazy').setup {
     -- 'flazz/vim-colorschemes',
     'cseelus/vim-colors-clearance',
     event = 'UIEnter',
-    init = function()
+    config = function()
       vim.cmd.colorscheme 'clearance'
     end,
     -- opts = {
