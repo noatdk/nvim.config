@@ -10,12 +10,12 @@ return {
       lazy = true,
       open_mapping = { [[<c-t>]], [[<c-¥>]] },
       -- shell = "bash",
-      on_stdout = function(t, job, data, name)
+      on_stdout = function(t, _, data, _)
         local efm = vim.opt.errorformat._value
         if t.id == run_term_id then
           -- new array
           local new_data = {}
-          for i, line in pairs(data) do
+          for _, line in pairs(data) do
             if line ~= '' then
               new_data[#new_data + 1] = line
             end

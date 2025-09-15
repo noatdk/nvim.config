@@ -80,15 +80,11 @@ return {
 
           -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
           ---@param client vim.lsp.Client
-          ---@param method vim.lsp.protocol.Method
+          ---@param method vim.lsp.protocol.Method.ClientToServer
           ---@param bufnr? integer some lsp support methods only in specific files
           ---@return boolean
           local function client_supports_method(client, method, bufnr)
-            if vim.fn.has 'nvim-0.11' == 1 then
-              return client:supports_method(method, bufnr)
-            else
-              return client.supports_method(method, { bufnr = bufnr })
-            end
+            return client:supports_method(method, bufnr)
           end
 
           -- The following two autocommands are used to highlight references of the
@@ -131,12 +127,15 @@ return {
             local file = vim.api.nvim_buf_get_name(0)
             local state = 'ON'
             if file:find '.go$' then
-              local client = vim.lsp.get_active_clients { name = 'gopls' }
-              if type(next(client)) == 'nil' then
+              local goclient = vim.lsp.get_clients { name = 'gopls' }
+              if type(next(goclient)) == 'nil' then
                 fidget.notify 'gopls is not active'
                 return
               end
-              local settings = client[1].config.settings
+              local settings = goclient[1].config.settings
+              if settings == nil then
+                return
+              end
               local current = settings['gopls']['ui.completion.usePlaceholders']
               settings['gopls']['ui.completion.usePlaceholders'] = not current
               if current then
@@ -144,23 +143,26 @@ return {
               end
               vim.lsp.buf_notify(0, 'workspace/didChangeConfiguration', { settings = settings })
             elseif file:find '.c$' then
-              local client = vim.lsp.get_active_clients { name = 'clangd' }
-              if type(next(client)) == 'nil' then
+              local clangdclient = vim.lsp.get_clients { name = 'clangd' }
+              if type(next(clangdclient)) == 'nil' then
                 fidget.notify 'clangd is not active'
                 return
               end
-              local cmd = client[1].config.cmd
+
+              local cmd = clangdclient[1].config.cmd
               local current = false
+              ---@diagnostic disable-next-line: param-type-mismatch
               for i, v in ipairs(cmd) do
-                fidget.notify(v)
                 if v == '--function-arg-placeholders=false' then
                   fidget.notify 'found it'
+                  ---@diagnostic disable-next-line: param-type-mismatch
                   table.remove(cmd, i)
                   current = true
                   break
                 end
               end
               if not current then
+                ---@diagnostic disable-next-line: param-type-mismatch
                 table.insert(cmd, '--function-arg-placeholders=false')
                 state = 'OFF'
               end
