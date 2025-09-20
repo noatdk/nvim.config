@@ -1,7 +1,6 @@
 vim.loader.enable()
 --vim.cmd 'lang ja_JP.UTF-8'
 
--- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
@@ -18,7 +17,6 @@ vim.deprecate = function() end
 
 -- [[ setting options ]]
 -- see `:help vim.opt`
--- note: you can change these options as you wish!
 --  for more options, you can see `:help option-list
 vim.opt.title = true
 vim.opt.titlelen = 0 -- do not shorten title
@@ -191,6 +189,23 @@ vim.opt.rtp:prepend(lazypath)
 -- [[ Configure and install plugins ]]
 require('lazy').setup {
   {
+    'hrsh7th/nvim-automa',
+    event = 'VeryLazy',
+    init = function()
+      local automa = require 'automa'
+      automa.setup {
+        mapping = {
+          ['<C-.>'] = {
+            queries = {
+              -- wide-range dot-repeat definition.
+              automa.query_v1 { '!n(h,l)+' },
+            },
+          },
+        },
+      }
+    end,
+  },
+  {
     'yorickpeterse/nvim-pqf',
     opts = {
 
@@ -319,8 +334,6 @@ require('lazy').setup {
     'folke/which-key.nvim',
     event = 'VeryLazy',
     config = function() -- This is the function that runs, AFTER loading
-      require('which-key').setup()
-
       -- Document existing key chains
       require('which-key').add {
         { '<leader>c', group = '[C]ode' },
@@ -355,7 +368,6 @@ require('lazy').setup {
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VeryLazy', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
-
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     event = 'VeryLazy',
@@ -366,7 +378,7 @@ require('lazy').setup {
       --  - va)  - [V]isually select [A]round [)]paren
       --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
       --  - ci'  - [C]hange [I]nside [']quote
-      require('mini.ai').setup { n_lines = 500 }
+      -- require('mini.ai').setup { n_lines = 500 }
 
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --

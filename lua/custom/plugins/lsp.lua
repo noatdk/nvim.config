@@ -250,6 +250,22 @@ return {
               completion = {
                 callSnippet = 'Replace',
               },
+              runtime = {
+                -- Tell the language server which version of Lua you're using
+                version = 'LuaJIT',
+              },
+              diagnostics = {
+                -- Get the language server to recognize the `vim` global
+                globals = { 'vim' },
+              },
+              workspace = {
+                checkThirdParty = false,
+                library = {
+                  -- Make the server aware of Neovim runtime files
+                  vim.env.VIMRUNTIME,
+                  vim.fn.stdpath 'config',
+                },
+              },
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
               -- diagnostics = { disable = { 'missing-fields' } },
             },
