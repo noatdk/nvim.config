@@ -118,8 +118,7 @@ end
 vim.cmd 'autocmd! TermOpen term://* lua set_terminal_keymaps()'
 
 function _G.insert_full_path()
-  local filepath = vim.fn.expand '%'
-  vim.fn.setreg('+', filepath) -- write to clippoard
+  vim.fn.setreg('+', vim.api.nvim_buf_get_name(0)) -- write to clippoard
 end
 
 vim.keymap.set('n', '<leader>cp', insert_full_path, { noremap = true, silent = true, desc = '[C]opy File [P]ath' })
@@ -188,23 +187,64 @@ vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure and install plugins ]]
 require('lazy').setup {
+  -- {
+  --   'chrisgrieser/nvim-recorder',
+  --   -- dependencies = 'rcarriga/nvim-notify',
+  --   event = 'VeryLazy',
+  --   keys = {
+  --     -- these must match the keys in the mapping config below
+  --     { 'q', desc = ' Start Recording' },
+  --     { 'Q', desc = ' Play Recording' },
+  --     { 'cq', desc = '[C]hange Macro(Q)' },
+  --     { 'yq', desc = '[Y]ank Macro(Q)' },
+  --     { 'dq', desc = '[D]elete Macros(Q)' },
+  --   },
+  --   config = function()
+  --     local recorder = require 'recorder'
+  --     --- @diagnostic disable-next-line:missing-fields
+  --     recorder.setup {
+  --       logLevel = vim.log.levels.OFF,
+  --       lessNotifications = true,
+  --       mapping = {
+  --         startStopRecording = 'q',
+  --         playMacro = 'Q',
+  --         switchSlot = '<C-q>',
+  --         editMacro = 'cq',
+  --         deleteAllMacros = 'dq',
+  --         yankMacro = 'yq',
+  --         -- ⚠️ this should be a string you don't use in insert mode during a macro
+  --         addBreakPoint = '##',
+  --       },
+  --     }
+  --   end,
+  -- },
   {
-    'hrsh7th/nvim-automa',
+    'AckslD/nvim-neoclip.lua',
     event = 'VeryLazy',
-    init = function()
-      local automa = require 'automa'
-      automa.setup {
-        mapping = {
-          ['<C-.>'] = {
-            queries = {
-              -- wide-range dot-repeat definition.
-              automa.query_v1 { '!n(h,l)+' },
-            },
-          },
-        },
-      }
-    end,
+    dependencies = {
+      { 'nvim-telescope/telescope.nvim' },
+    },
+    opts = {
+      default_register_macros = 'q',
+    },
   },
+  -- {
+  --   'hrsh7th/nvim-automa',
+  --   event = 'VeryLazy',
+  --   init = function()
+  --     local automa = require 'automa'
+  --     automa.setup {
+  --       mapping = {
+  --         ['<C-.>'] = {
+  --           queries = {
+  --             -- wide-range dot-repeat definition.
+  --             automa.query_v1 { '!n(h,l)+' },
+  --           },
+  --         },
+  --       },
+  --     }
+  --   end,
+  -- },
   {
     'yorickpeterse/nvim-pqf',
     opts = {
@@ -306,17 +346,18 @@ require('lazy').setup {
     'mg979/vim-visual-multi',
     event = 'VeryLazy',
   },
-  -- {
-  --   'amitds1997/remote-nvim.nvim',
-  --   lazy = true,
-  --   version = '*', -- Pin to GitHub releases
-  --   dependencies = {
-  --     'nvim-lua/plenary.nvim', -- For standard functions
-  --     'MunifTanjim/nui.nvim', -- To build the plugin UI
-  --     'nvim-telescope/telescope.nvim', -- For picking b/w different remote methods
-  --   },
-  --   config = true,
-  -- },
+  {
+    'amitds1997/remote-nvim.nvim',
+    lazy = true,
+    event = 'VeryLazy',
+    version = '*', -- Pin to GitHub releases
+    dependencies = {
+      'nvim-lua/plenary.nvim', -- For standard functions
+      'MunifTanjim/nui.nvim', -- To build the plugin UI
+      'nvim-telescope/telescope.nvim', -- For picking b/w different remote methods
+    },
+    config = true,
+  },
   -- { 'Civitasv/cmake-tools.nvim', opts = {} },
 
   {
@@ -343,6 +384,10 @@ require('lazy').setup {
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+      }
+
+      require('which-key').setup {
+        preset = 'helix',
       }
     end,
   },
@@ -438,5 +483,5 @@ require('lazy').setup {
   require 'custom.plugins.format',
   require 'custom.plugins.toggleterm',
   -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'custom.plugins.gitsigns', -- adds gitsigns recommend keymaps
 }
