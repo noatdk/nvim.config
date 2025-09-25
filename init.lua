@@ -22,8 +22,11 @@ vim.opt.title = true
 vim.opt.titlelen = 0 -- do not shorten title
 vim.opt.titlestring = '%t%( %M%)%( (%{expand("%:~:h")})%)%a'
 
-vim.opt.foldenable = false
+vim.o.foldenable = true
+vim.o.foldlevelstart = 99
 vim.opt.foldlevel = 20
+-- vim.wo.foldmethod = 'expr'
+-- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 
 -- Make line numbers default
 vim.opt.number = true
@@ -156,7 +159,25 @@ vim.keymap.set('n', 'gl', function()
   require('fileline').gotoline_at_cursor(true)
 end, { desc = '[G]o to [L]ine' })
 
-vim.api.nvim_set_keymap('c', '<CR>', '<Plug>(kensaku-search-replace)<CR>', { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('c', '<CR>', '<Plug>(kensaku-search-replace)<CR>', { noremap = true, silent = true })
+-- local function requiref(module)
+--   require(module)
+-- end
+--
+-- vim.keymap.set('c', '<CR>', function()
+--   local kensaku = pcall(vim.fn['kensaku_search#replace'])
+--   if not kensaku then
+--     vim.notify 'not kensaku'
+--     local input = vim.api.nvim_eval 'getcmdline()'
+--     vim.cmd(input)
+--     local esc = vim.api.nvim_replace_termcodes('<esc>', true, false, true)
+--     vim.api.nvim_feedkeys(esc, 'x', false)
+--   else
+--     vim.notify 'kensaku'
+--     vim.api.nvim_feedkeys('<Plug>(kensaku-search-replace)<CR>', 'c', false)
+--   end
+-- end, { noremap = true, silent = true })
+--
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -219,6 +240,20 @@ require('lazy').setup {
   --   end,
   -- },
   {
+    'kevinhwang91/nvim-ufo',
+    event = 'VeryLazy',
+    dependencies = {
+      'kevinhwang91/promise-async',
+    },
+    config = function()
+      require('ufo').setup {
+        provider_selector = function(_, filetype, buftype)
+          return { 'treesitter', 'indent' }
+        end,
+      }
+    end,
+  },
+  {
     'AckslD/nvim-neoclip.lua',
     event = 'VeryLazy',
     dependencies = {
@@ -247,6 +282,7 @@ require('lazy').setup {
   -- },
   {
     'yorickpeterse/nvim-pqf',
+    event = 'VeryLazy',
     opts = {
 
       signs = {
@@ -362,6 +398,7 @@ require('lazy').setup {
 
   {
     'lambdalisue/kensaku-search.vim',
+    event = 'VeryLazy',
     dependencies = {
       { 'vim-denops/denops.vim', event = 'VeryLazy' },
       {
@@ -369,7 +406,12 @@ require('lazy').setup {
         event = 'VeryLazy',
       },
     },
-    event = 'VeryLazy',
+    config = function()
+      local kensaku = pcall(vim.fn['kensaku_search#replace'])
+      if kensaku then
+        vim.api.nvim_set_keymap('c', '<CR>', '<Plug>(kensaku-search-replace)<CR>', { noremap = true, silent = true })
+      end
+    end,
   },
   {
     'folke/which-key.nvim',

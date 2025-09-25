@@ -54,17 +54,19 @@ return {
       --   },
       -- }
 
-      require('nvim-treesitter.configs').setup(opts)
-      vim.api.nvim_create_autocmd({ 'FileType' }, {
-        callback = function()
-          if require('nvim-treesitter.parsers').has_parser() then
-            vim.opt.foldmethod = 'expr'
-            vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
-          else
-            vim.opt.foldmethod = 'syntax'
-          end
-        end,
-      })
+      -- NOTE: disabling this since nvim-ufo already uses 'indent'
+      --
+      -- require('nvim-treesitter.configs').setup(opts)
+      -- vim.api.nvim_create_autocmd({ 'FileType' }, {
+      --   callback = function()
+      --     if require('nvim-treesitter.parsers').has_parser() then
+      --       vim.opt.foldmethod = 'expr'
+      --       vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+      --     else
+      --       vim.opt.foldmethod = 'syntax'
+      --     end
+      --   end,
+      -- })
 
       -- There are additional nvim-treesitter modules that you can use to interact
       -- with nvim-treesitter. You should go explore a few and see what interests you:
@@ -77,6 +79,7 @@ return {
   },
   {
     'nvim-treesitter/nvim-treesitter-context',
+    event = 'VeryLazy',
     opts = {
       enable = true,
     },
