@@ -208,6 +208,27 @@ vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure and install plugins ]]
 require('lazy').setup {
+  {
+    'folke/flash.nvim',
+    event = 'VeryLazy',
+    ---@type Flash.Config
+    opts = {},
+  -- stylua: ignore
+  keys = {
+    { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+    -- { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+    { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+    -- { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+    -- { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+  },
+  },
+  -- {
+  --   'ggandor/leap.nvim',
+  --   config = function()
+  --     vim.keymap.set({ 'n', 'x', 'o' }, 's', '<Plug>(leap)')
+  --     vim.keymap.set('n', 'S', '<Plug>(leap-from-window)')
+  --   end,
+  -- },
   -- {
   --   'chrisgrieser/nvim-recorder',
   --   -- dependencies = 'rcarriga/nvim-notify',
@@ -364,17 +385,18 @@ require('lazy').setup {
           restore_options = true,
         },
       }
-      vim.api.nvim_create_autocmd('FileType', {
-        pattern = 'kitty-scrollback',
-        callback = function()
-          vim.schedule(function()
-            vim.keymap.set('n', '<CR>', function()
-              local fileline = require 'fileline'
-              fileline.gotoline_at_cursor(true)
-            end)
-          end)
-        end,
-      })
+
+      -- vim.api.nvim_create_autocmd('FileType', {
+      --   pattern = 'kitty-scrollback',
+      --   callback = function()
+      --     vim.schedule(function()
+      --       vim.keymap.set('n', '<CR>', function()
+      --         local fileline = require 'fileline'
+      --         fileline.gotoline_at_cursor(true)
+      --       end)
+      --     end)
+      --   end,
+      -- })
     end,
   },
   -- { 'skywind3000/asyncrun.vim' },
