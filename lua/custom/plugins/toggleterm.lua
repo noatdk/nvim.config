@@ -8,7 +8,7 @@ return {
     local toggleterm = require 'toggleterm.terminal'
     require('toggleterm').setup {
       lazy = true,
-      open_mapping = { [[<c-t>]], [[<c-¥>]] },
+      open_mapping = { [[<c-`>]] },
       -- shell = "bash",
       on_stdout = function(t, _, data, _)
         local efm = vim.opt.errorformat._value
