@@ -14,6 +14,7 @@ vim.g.node_host_prog = '~/.nvm/versions/node/v21.7.3/lib/node_modules/'
 
 ---@diagnostic disable-next-line: duplicate-set-field
 vim.deprecate = function() end
+vim.g.python3_host_prog = '/usr/local/bin/python3'
 
 -- [[ setting options ]]
 -- see `:help vim.opt`
@@ -21,6 +22,7 @@ vim.deprecate = function() end
 vim.opt.title = true
 vim.opt.titlelen = 0 -- do not shorten title
 vim.opt.titlestring = '%t%( %M%)%( (%{expand("%:~:h")})%)%a'
+vim.opt.conceallevel = 2
 
 vim.o.foldenable = true
 vim.o.foldlevelstart = 99
@@ -159,26 +161,6 @@ vim.keymap.set('n', 'gl', function()
   require('fileline').gotoline_at_cursor(true)
 end, { desc = '[G]o to [L]ine' })
 
--- vim.api.nvim_set_keymap('c', '<CR>', '<Plug>(kensaku-search-replace)<CR>', { noremap = true, silent = true })
--- local function requiref(module)
---   require(module)
--- end
---
--- vim.keymap.set('c', '<CR>', function()
---   local kensaku = pcall(vim.fn['kensaku_search#replace'])
---   if not kensaku then
---     vim.notify 'not kensaku'
---     local input = vim.api.nvim_eval 'getcmdline()'
---     vim.cmd(input)
---     local esc = vim.api.nvim_replace_termcodes('<esc>', true, false, true)
---     vim.api.nvim_feedkeys(esc, 'x', false)
---   else
---     vim.notify 'kensaku'
---     vim.api.nvim_feedkeys('<Plug>(kensaku-search-replace)<CR>', 'c', false)
---   end
--- end, { noremap = true, silent = true })
---
-
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -209,6 +191,75 @@ vim.opt.rtp:prepend(lazypath)
 -- [[ Configure and install plugins ]]
 require('lazy').setup {
   {
+    'folke/snacks.nvim',
+    -- priority = 1000,
+    -- lazy = false,
+    -- event = 'VeryLazy',
+    ---@type snacks.Config
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+      -- bigfile = { enabled = true },
+      -- dashboard = { enabled = true },
+      -- explorer = { enabled = true },
+      -- indent = { enabled = true },
+      -- input = { enabled = true },
+      -- picker = { enabled = true },
+      -- notifier = { enabled = true },
+      -- quickfile = { enabled = true },
+      -- scope = { enabled = true },
+      -- scroll = { enabled = true },
+      -- statuscolumn = { enabled = true },
+      -- words = { enabled = true },
+      image = {
+        enabled = true,
+        resolve = function(path, src)
+          if require('obsidian.api').path_is_note(path) then
+            return require('obsidian.api').resolve_image_path(src)
+          end
+        end,
+      },
+    },
+  },
+  -- 日本語の文字区切り
+  -- {
+  --   { 'https://github.com/atusy/budoux.lua' },
+  --   {
+  --     'https://github.com/atusy/budouxify.nvim',
+  --     config = function()
+  --       vim.keymap.set('n', 'W', function()
+  --         local pos = require('budouxify.motion').find_forward {
+  --           head = true,
+  --         }
+  --         if pos then
+  --           vim.api.nvim_win_set_cursor(0, { pos.row, pos.col })
+  --         end
+  --       end)
+  --       vim.keymap.set('n', 'E', function()
+  --         local pos = require('budouxify.motion').find_forward {
+  --           head = false,
+  --         }
+  --         if pos then
+  --           vim.api.nvim_win_set_cursor(0, { pos.row, pos.col })
+  --         end
+  --       end)
+  --     end,
+  --   },
+  -- },
+  {
+    'keaising/im-select.nvim',
+    event = 'VeryLazy',
+    opts = {
+      default_im_select = 'com.google.inputmethod.Japanese.Roman',
+      default_command = 'macism',
+    },
+  },
+  {
+    'mfussenegger/nvim-jdtls',
+    event = 'VeryLazy',
+  },
+  {
     'folke/flash.nvim',
     event = 'VeryLazy',
     ---@type Flash.Config
@@ -222,44 +273,6 @@ require('lazy').setup {
     -- { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
   },
   },
-  -- {
-  --   'ggandor/leap.nvim',
-  --   config = function()
-  --     vim.keymap.set({ 'n', 'x', 'o' }, 's', '<Plug>(leap)')
-  --     vim.keymap.set('n', 'S', '<Plug>(leap-from-window)')
-  --   end,
-  -- },
-  -- {
-  --   'chrisgrieser/nvim-recorder',
-  --   -- dependencies = 'rcarriga/nvim-notify',
-  --   event = 'VeryLazy',
-  --   keys = {
-  --     -- these must match the keys in the mapping config below
-  --     { 'q', desc = ' Start Recording' },
-  --     { 'Q', desc = ' Play Recording' },
-  --     { 'cq', desc = '[C]hange Macro(Q)' },
-  --     { 'yq', desc = '[Y]ank Macro(Q)' },
-  --     { 'dq', desc = '[D]elete Macros(Q)' },
-  --   },
-  --   config = function()
-  --     local recorder = require 'recorder'
-  --     --- @diagnostic disable-next-line:missing-fields
-  --     recorder.setup {
-  --       logLevel = vim.log.levels.OFF,
-  --       lessNotifications = true,
-  --       mapping = {
-  --         startStopRecording = 'q',
-  --         playMacro = 'Q',
-  --         switchSlot = '<C-q>',
-  --         editMacro = 'cq',
-  --         deleteAllMacros = 'dq',
-  --         yankMacro = 'yq',
-  --         -- ⚠️ this should be a string you don't use in insert mode during a macro
-  --         addBreakPoint = '##',
-  --       },
-  --     }
-  --   end,
-  -- },
   {
     'kevinhwang91/nvim-ufo',
     event = 'VeryLazy',
@@ -344,9 +357,6 @@ require('lazy').setup {
     },
   },
   -- {
-  --   'pechorin/any-jump.vim',
-  -- },
-  -- {
   --   'romus204/referencer.nvim',
   --   config = function()
   --     require('referencer').setup {
@@ -385,18 +395,6 @@ require('lazy').setup {
           restore_options = true,
         },
       }
-
-      -- vim.api.nvim_create_autocmd('FileType', {
-      --   pattern = 'kitty-scrollback',
-      --   callback = function()
-      --     vim.schedule(function()
-      --       vim.keymap.set('n', '<CR>', function()
-      --         local fileline = require 'fileline'
-      --         fileline.gotoline_at_cursor(true)
-      --       end)
-      --     end)
-      --   end,
-      -- })
     end,
   },
   -- { 'skywind3000/asyncrun.vim' },
@@ -417,7 +415,6 @@ require('lazy').setup {
     config = true,
   },
   -- { 'Civitasv/cmake-tools.nvim', opts = {} },
-
   {
     'lambdalisue/kensaku-search.vim',
     event = 'VeryLazy',
@@ -447,6 +444,7 @@ require('lazy').setup {
         { '<leader>s', group = '[S]earch' },
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
+        { '<leader>o', group = '[O]bsidian' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       }
 
@@ -455,25 +453,26 @@ require('lazy').setup {
       }
     end,
   },
-  -- { 'folke/tokyonight.nvim' },
   {
-    -- 'flazz/vim-colorschemes',
-    'cseelus/vim-colors-clearance',
-    event = 'UIEnter',
-    config = function()
-      vim.cmd.colorscheme 'clearance'
-    end,
-    -- opts = {
-    --   transparent = true,
-    --   styles = {
-    --     sidebars = 'transparent',
-    --     floats = 'transparent',
-    --   },
-    -- },
+    'ribru17/bamboo.nvim',
+    opts = {},
   },
   -- {
-  --   'morhetz/gruvbox',
+  --   'projekt0n/github-nvim-theme',
+  --   event = 'UIEnter',
+  --   config = function()
+  --     vim.cmd.colorscheme(vim.g.colorscheme or 'github_dark')
+  --   end,
   -- },
+  {
+    'cseelus/vim-colors-clearance',
+    -- 'folke/tokyonight.nvim',
+    --   'morhetz/gruvbox',
+    event = 'UIEnter',
+    config = function()
+      vim.cmd.colorscheme(vim.g.colorscheme or 'clearance')
+    end,
+  },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VeryLazy', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -546,6 +545,6 @@ require('lazy').setup {
   require 'custom.plugins.tree-sitter',
   require 'custom.plugins.format',
   require 'custom.plugins.toggleterm',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'custom.plugins.obsidian',
   require 'custom.plugins.gitsigns', -- adds gitsigns recommend keymaps
 }
